@@ -126,7 +126,7 @@ class WatchlistSeriesBloc extends Bloc<SeriesEvent, SeriesState> {
       result.fold((failure) {
         emit(SeriesHasError(failure.message));
       }, (tvData) {
-        emit(SeriesHasData(tvData));
+        emit(WatchlistSeriesHasData(tvData));
       });
     });
     on<AddWatchlistSeries>((event, emit) async {
@@ -151,8 +151,15 @@ class WatchlistSeriesBloc extends Bloc<SeriesEvent, SeriesState> {
     });
     on<RemoveWatchlistSerieses>((event, emit) async {
       final tv = event.tv;
+
       emit(SeriesLoading());
       final result = await removeWatchlistSeries.execute(tv);
+
+      result.fold((failure) {
+        emit(SeriesHasError(failure.message));
+      }, (successMessage) {
+        emit(WatchlistSeriesMessage(successMessage));
+      });
     });
   }
 }

@@ -22,7 +22,7 @@ class _NowPlayingSeriesPageState extends State<NowPlayingSeriesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Now Playing Movies'),
+        title: Text('Now Playing Series'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),

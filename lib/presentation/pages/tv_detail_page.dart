@@ -1,13 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:ditonton/common/constants.dart';
-import 'package:ditonton/domain/entities/genre.dart';
-import 'package:ditonton/domain/entities/tv.dart';
-import 'package:ditonton/domain/entities/tv_detail.dart';
-import 'package:ditonton/presentation/bloc/tv/tv_bloc.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+
+import '../../common/constants.dart';
+import '../../domain/entities/genre.dart';
+import '../../domain/entities/tv.dart';
+import '../../domain/entities/tv_detail.dart';
+import '../bloc/tv/tv_bloc.dart';
 
 class SeriesDetailPage extends StatefulWidget {
   static const ROUTE_NAME = '/detailseries';
@@ -132,6 +132,10 @@ class DetailContent extends StatelessWidget {
                                   context
                                       .read<WatchlistSeriesBloc>()
                                       .add(AddWatchlistSeries(series));
+                                } else {
+                                  context
+                                      .read<WatchlistSeriesBloc>()
+                                      .add(RemoveWatchlistSerieses(series));
                                 }
 
                                 String message = '';
@@ -147,6 +151,12 @@ class DetailContent extends StatelessWidget {
                                           .watchlistRemoveSuccessMessage
                                       : WatchlistSeriesBloc
                                           .watchlistAddSuccessMessage;
+                                } else {
+                                  message = isAddedWatchlist == false
+                                      ? WatchlistSeriesBloc
+                                          .watchlistAddSuccessMessage
+                                      : WatchlistSeriesBloc
+                                          .watchlistRemoveSuccessMessage;
                                 }
 
                                 if (message ==
@@ -218,7 +228,7 @@ class DetailContent extends StatelessWidget {
                                   );
                                 } else if (state is SeriesHasError) {
                                   return Text(state.message);
-                                } else if (state is SeriesHasData) {
+                                } else if (state is SeriesDetailHasData) {
                                   return Container(
                                     height: 150,
                                     child: ListView.builder(
@@ -312,16 +322,5 @@ class DetailContent extends StatelessWidget {
     }
 
     return result.substring(0, result.length - 2);
-  }
-
-  String _showDuration(int runtime) {
-    final int hours = runtime ~/ 60;
-    final int minutes = runtime % 60;
-
-    if (hours > 0) {
-      return '${hours}h ${minutes}m';
-    } else {
-      return '${minutes}m';
-    }
   }
 }

@@ -5,6 +5,7 @@ import 'package:ditonton/data/datasources/tv_local_data_source.dart';
 import 'package:ditonton/data/datasources/tv_remote_data_source.dart';
 import 'package:ditonton/data/repositories/movie_repository_impl.dart';
 import 'package:ditonton/data/repositories/tv_repository_impl.dart';
+import 'package:ditonton/data/security/ssl_pinning.dart';
 import 'package:ditonton/domain/repositories/movie_repository.dart';
 import 'package:ditonton/domain/repositories/tv_repository.dart';
 import 'package:ditonton/domain/usecases/get_movie_detail.dart';
@@ -28,9 +29,8 @@ import 'package:ditonton/domain/usecases/save_watchlist.dart';
 import 'package:ditonton/domain/usecases/search_movies.dart';
 import 'package:ditonton/presentation/bloc/movie/movie_bloc.dart';
 import 'package:ditonton/presentation/bloc/search_movies/search_bloc.dart';
-import 'package:ditonton/presentation/bloc/search_tv/searchtv_bloc.dart';
+import 'package:ditonton/presentation/bloc/search_tv/tv_search_bloc.dart';
 import 'package:ditonton/presentation/bloc/tv/tv_bloc.dart';
-import 'package:http/http.dart' as http;
 import 'package:get_it/get_it.dart';
 
 import 'data/datasources/db/tv_database_helper.dart';
@@ -40,6 +40,11 @@ final locator = GetIt.instance;
 
 void init() {
   //BloC
+  locator.registerFactory(
+    () => TvSearchBloc(
+      locator(),
+    ),
+  );
   locator.registerFactory(
     () => WatchlistSeriesBloc(
       locator(),
@@ -112,11 +117,6 @@ void init() {
       locator(),
     ),
   );
-  locator.registerFactory(
-    () => SearchTVBloc(
-      locator(),
-    ),
-  );
 
   // use case
   locator.registerLazySingleton(() => GetNowPlayingMovies(locator()));
@@ -169,5 +169,5 @@ void init() {
   locator.registerLazySingleton<DatabaseHelper>(() => DatabaseHelper());
   locator.registerLazySingleton<DatabaseHelperTv>(() => DatabaseHelperTv());
   // external
-  locator.registerLazySingleton(() => http.Client());
+  locator.registerLazySingleton(() => SslPinning.client);
 }

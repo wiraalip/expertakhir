@@ -2,7 +2,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:dartz/dartz.dart';
 import 'package:ditonton/domain/entities/tv.dart';
 import 'package:ditonton/domain/usecases/search_tv.dart';
-import 'package:ditonton/presentation/bloc/search_tv/searchtv_bloc.dart';
+import 'package:ditonton/presentation/bloc/search_tv/tv_search_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -12,11 +12,11 @@ import 'searchtv_bloc_test.mocks.dart';
 @GenerateMocks([SearchSeries])
 void main() {
   late MockSearchSeries mockSearchSeries;
-  late SearchTVBloc searchTVBloc;
+  late TvSearchBloc tvSearchBloc;
 
   setUp(() {
     mockSearchSeries = MockSearchSeries();
-    searchTVBloc = SearchTVBloc(mockSearchSeries);
+    tvSearchBloc = TvSearchBloc(mockSearchSeries);
   });
 
   group('Search Series Bloc Test', () {
@@ -36,19 +36,19 @@ void main() {
     final tTVList = <TV>[tvModel];
     const tQuery = 'All American';
     test('initial state should empty', () {
-      expect(searchTVBloc.state, SearchTVEmpty());
+      expect(tvSearchBloc.state, TvSearchEmpty());
     });
 
-    blocTest<SearchTVBloc, SearchTVState>(
+    blocTest<TvSearchBloc, TvSearchState>(
         'should emit [Loading, HasData] when data is gotten',
         build: () {
           when(mockSearchSeries.execute(tQuery))
               .thenAnswer((_) async => Right(tTVList));
-          return searchTVBloc;
+          return tvSearchBloc;
         },
-        act: (bloc) => bloc.add(OnQueryChange(tQuery)),
-        wait: const Duration(milliseconds: 100),
-        expect: () => [SearchTVLoading(), SearchTVHasData(tTVList)],
+        act: (bloc) => bloc.add(OnTvQueryChanged(tQuery)),
+        wait: const Duration(milliseconds: 500),
+        expect: () => [TvSearchLoading(), TvSearchHasData(tTVList)],
         verify: (bloc) {
           verify(mockSearchSeries.execute(tQuery));
         });

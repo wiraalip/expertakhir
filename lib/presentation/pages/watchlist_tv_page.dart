@@ -1,11 +1,12 @@
-import 'package:ditonton/common/utils.dart';
-import 'package:ditonton/presentation/bloc/tv/tv_bloc.dart';
-import 'package:ditonton/presentation/widgets/tv_card_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../common/utils.dart';
+import '../bloc/tv/tv_bloc.dart';
+import '../widgets/tv_card_list.dart';
+
 class WatchlistSeriesPage extends StatefulWidget {
-  static const ROUTE_NAME = '/watchlist-Series';
+  static const ROUTE_NAME = '/watchlist-series';
 
   @override
   _WatchlistSeriesPageState createState() => _WatchlistSeriesPageState();
@@ -16,9 +17,8 @@ class _WatchlistSeriesPageState extends State<WatchlistSeriesPage>
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
-      context.read<WatchlistSeriesBloc>().add(FetchWatchlistSeries());
-    });
+    Future.microtask(
+        () => context.read<WatchlistSeriesBloc>().add(FetchWatchlistSeries()));
   }
 
   @override
@@ -35,7 +35,7 @@ class _WatchlistSeriesPageState extends State<WatchlistSeriesPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Watchlist TV'),
+        title: Text('Watchlist Series'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -45,13 +45,13 @@ class _WatchlistSeriesPageState extends State<WatchlistSeriesPage>
               return Center(
                 child: CircularProgressIndicator(),
               );
-            } else if (state is SeriesHasData) {
+            } else if (state is WatchlistSeriesHasData) {
               return ListView.builder(
                 itemBuilder: (context, index) {
-                  final series = state.tv[index];
+                  final series = state.watchlistSeries[index];
                   return SeriesCard(series);
                 },
-                itemCount: state.tv.length,
+                itemCount: state.watchlistSeries.length,
               );
             } else if (state is SeriesHasError) {
               return Center(
@@ -59,9 +59,7 @@ class _WatchlistSeriesPageState extends State<WatchlistSeriesPage>
                 child: Text(state.message),
               );
             } else {
-              return Center(
-                child: Text('No Data'),
-              );
+              return Center(child: const Text('No Watchlist Series'));
             }
           },
         ),

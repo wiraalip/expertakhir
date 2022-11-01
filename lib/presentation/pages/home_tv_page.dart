@@ -1,14 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:ditonton/common/constants.dart';
-import 'package:ditonton/domain/entities/tv.dart';
-import 'package:ditonton/presentation/bloc/tv/tv_bloc.dart';
-import 'package:ditonton/presentation/pages/now_playing_series.dart';
-import 'package:ditonton/presentation/pages/tv_detail_page.dart';
-import 'package:ditonton/presentation/pages/popular_tv_page.dart';
-import 'package:ditonton/presentation/pages/top_rated_tv_page.dart';
-import 'package:ditonton/presentation/pages/tv_search_page.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../common/constants.dart';
+import '../../domain/entities/tv.dart';
+import '../bloc/tv/tv_bloc.dart';
+import 'now_playing_series.dart';
+import 'popular_tv_page.dart';
+import 'top_rated_tv_page.dart';
+import 'tv_detail_page.dart';
+import 'tv_search_page.dart';
 
 class HomeSeriesPage extends StatefulWidget {
   static const ROUTE_NAME = '/home-series';
@@ -22,8 +24,8 @@ class _HomeSeriesPageState extends State<HomeSeriesPage> {
     super.initState();
     Future.microtask(() {
       context.read<PopularSeriesBloc>().add(FetchPopularSeries());
-      context.read<TopRatedSeriesBloc>().add(FetchTopRatedSeries());
       context.read<NowPlayingSeriesBloc>().add(FetchNowPlayingSeries());
+      context.read<TopRatedSeriesBloc>().add(FetchTopRatedSeries());
     });
   }
 
@@ -31,7 +33,7 @@ class _HomeSeriesPageState extends State<HomeSeriesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Search TV Series'),
+        title: Text('Search Series'),
         actions: [
           IconButton(
             onPressed: () {
@@ -48,7 +50,7 @@ class _HomeSeriesPageState extends State<HomeSeriesPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildSubHeading(
-                title: 'On The Air',
+                title: 'Now Playing',
                 onTap: () => Navigator.pushNamed(
                     context, NowPlayingSeriesPage.ROUTE_NAME),
               ),
@@ -64,8 +66,7 @@ class _HomeSeriesPageState extends State<HomeSeriesPage> {
                   return Center(
                     child: Text(state.message),
                   );
-                }
-                {
+                } else {
                   return Text('Failed');
                 }
               }),
@@ -74,7 +75,7 @@ class _HomeSeriesPageState extends State<HomeSeriesPage> {
                 onTap: () =>
                     Navigator.pushNamed(context, PopularSeriesPage.ROUTE_NAME),
               ),
-              BlocBuilder<NowPlayingSeriesBloc, SeriesState>(
+              BlocBuilder<PopularSeriesBloc, SeriesState>(
                   builder: (context, state) {
                 if (state is SeriesLoading) {
                   return Center(
@@ -95,7 +96,7 @@ class _HomeSeriesPageState extends State<HomeSeriesPage> {
                 onTap: () =>
                     Navigator.pushNamed(context, TopRatedSeriesPage.ROUTE_NAME),
               ),
-              BlocBuilder<NowPlayingSeriesBloc, SeriesState>(
+              BlocBuilder<TopRatedSeriesBloc, SeriesState>(
                   builder: (context, state) {
                 if (state is SeriesLoading) {
                   return Center(
@@ -152,7 +153,7 @@ class SeriesList extends StatelessWidget {
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
-          final serie = series[index];
+          final serieses = series[index];
           return Container(
             padding: const EdgeInsets.all(8),
             child: InkWell(
@@ -160,13 +161,13 @@ class SeriesList extends StatelessWidget {
                 Navigator.pushNamed(
                   context,
                   SeriesDetailPage.ROUTE_NAME,
-                  arguments: serie.id,
+                  arguments: serieses.id,
                 );
               },
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(16)),
                 child: CachedNetworkImage(
-                  imageUrl: '$BASE_IMAGE_URL${serie.posterPath}',
+                  imageUrl: '$BASE_IMAGE_URL${serieses.posterPath}',
                   placeholder: (context, url) => Center(
                     child: CircularProgressIndicator(),
                   ),
